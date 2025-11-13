@@ -7,7 +7,8 @@ import {
   updateRole,
   deleteUser,
 } from '../controllers/userController.js';
-import { authenticate } from '../middleware/authenticate.js';
+import { authenticate } from '../middleware/authMiddleware.js';
+import { authorizeRole } from '../middleware/authorizeRole.js';
 
 const router = express.Router();
 
@@ -15,10 +16,12 @@ const router = express.Router();
 router.post('/auth/signup', signupUser);
 router.post('/auth/login', loginUser);
 
-// Protected routes
-router.get('/users', authenticate, getUsers);
+// Protected routes (manager-only)
+router.get('/users', authenticate, authorizeRole(['MANAGER']), getUsers);
+router.patch('/users/:id/role', authenticate, authorizeRole(['MANAGER']), updateRole);
+router.delete('/users/:id', authenticate, authorizeRole(['MANAGER']), deleteUser);
+
+// Protected (any logged-in user)
 router.get('/users/me', authenticate, getMe);
-router.patch('/users/:id/role', authenticate, updateRole);
-router.delete('/users/:id', authenticate, deleteUser);
 
 export default router;

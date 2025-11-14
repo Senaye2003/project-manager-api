@@ -1,0 +1,61 @@
+import { body } from 'express-validator';
+import { handleValidationErrors } from './handleValidationErrors.js';
+//import prisma for db hit to make sure user exists in validateCreateUser
+import prisma from '../config/db.js';
+
+
+const statusENUMS = ['TO_DO', 'IN_PROGRESS', 'UNDER_REVIEW', 'COMPLETE', 'CANCELLED'];
+export const validateCreateTask = [
+    //require, min length 3, string
+    body('title')
+        .exists({ checkFalsy: true })
+        .withMessage('title is required')
+        .bail()
+        .trim()
+        .escape()
+        .isString()
+        .withMessage('title must be a string')
+        .bail()
+        .isLength({ min: 3 })
+        .withMessage('title must be at least 3 characters'),
+
+    //required, must be oneof the ENUMS
+    body('status')
+        .exists({ values: 'falsy' })
+        .withMessage('status is required')
+        .bail()
+        .isIn(statusENUMS)
+        .withMessage('status must be one of: TO_DO, IN_PROGRESS, UNDER_REVIEW, COMPLETE, CANCELLED'),
+
+    //required and positive integer
+    body('projectId')
+        .exists({ checkFalsy: true })
+        .withMessage('projectId is required')
+        .bail()
+        .isInt({ min: 0 })
+        .withMessage('projectId must be a positive integer')
+        .toInt(),
+
+    //check that assignedTo is a user that actually exists
+    body('assignedTo')
+        .optional()
+        .isInt({ min: 0 })
+        .withMessage('assignedTo must be a positive integer')
+        .toInt()
+        .bail()
+        //check that user exists in db
+        .custom(async (value) => {
+            let user = await prisma.user.findUnique({
+                where: { id: value }
+            })
+
+            if (!user){
+                throw new Error('assignedTo: User with this id does not exist');
+            }
+            return;
+        }),
+
+
+
+    handleValidationErrors,
+];

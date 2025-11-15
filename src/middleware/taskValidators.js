@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { handleValidationErrors } from './handleValidationErrors.js';
 //import prisma for db hit to make sure user exists in validateCreateUser
 import prisma from '../config/db.js';
@@ -54,8 +54,51 @@ export const validateCreateTask = [
             }
             return;
         }),
-
-
+    //check that dueDate is proper ISO8601 format YYYY-MM-DD
+    body('dueDate')
+        .optional()
+        .isISO8601()
+        .withMessage('dueDate must be in the format YYYY-MM-DD'),
 
     handleValidationErrors,
 ];
+
+export const validateTaskId = [
+    param('id')
+        .isInt({ min: 1 })
+        .withMessage('Post id must be a positive integer'),
+    handleValidationErrors,
+];
+
+export const validateUpdateTask = [
+    //status must be oneof the ENUMS
+    body('status')
+        .optional()
+        .isIn(statusENUMS)
+        .withMessage('status must be one of: TO_DO, IN_PROGRESS, UNDER_REVIEW, COMPLETE, CANCELLED'),
+    //check that assignedTo is a user that actually exists
+    body('assignedTo')
+        .optional()
+        .isInt({ min: 0 })
+        .withMessage('assignedTo must be a positive integer')
+        .toInt()
+        .bail()
+        //check that user exists in db
+        .custom(async (value) => {
+            let user = await prisma.user.findUnique({
+                where: { id: value }
+            })
+
+            if (!user){
+                throw new Error('assignedTo: User with this id does not exist');
+            }
+            return;
+        }),
+    //check that dueDate is proper ISO8601 format YYYY-MM-DD
+    body('dueDate')
+        .optional()
+        .isISO8601()
+        .withMessage('dueDate must be in the format YYYY-MM-DD'),
+    
+    handleValidationErrors,
+]

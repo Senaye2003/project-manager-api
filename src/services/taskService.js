@@ -1,6 +1,7 @@
 import {
     getAll,
-    createT,
+    create,
+    update,
 } from '../repositories/taskRepo.js';
 
 export async function getAllTasks() {
@@ -8,5 +9,15 @@ export async function getAllTasks() {
 }
 
 export async function createTask(task) {
-    return await createT(task);
+    return await create(task);
+}
+
+export async function updateTask(id, updates) {
+    const updatedTask = await update(id, updates);
+    if (updatedTask) return updatedTask;
+    else {
+        const error = new Error(`Cannot find task with id ${id}`);
+        error.status = 404;
+        throw error;
+    }
 }

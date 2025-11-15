@@ -13,7 +13,7 @@ export async function getAll(){
 
             createdAt: true,
             updatedAt: true,
-            //only return the name and fields of the asignee
+            //only return the name and id fields of the asignee
             assignee: {
                 select: {
                     name: true,
@@ -26,9 +26,22 @@ export async function getAll(){
     return tasks;
 }
 
-export async function createT(task){
+export async function create(task){
     const newTask = await prisma.task.create({
         data: task,
     });
     return newTask;
+}
+
+export async function update(id, updates) {
+    try {
+        const updatedTask = await prisma.task.update({
+            where: { id },
+            data: updates,
+        });
+        return updatedTask;
+    } catch (error) {
+        if (error.code === 'P2025') return null;
+        throw error;
+    }
 }

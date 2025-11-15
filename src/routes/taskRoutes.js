@@ -3,12 +3,17 @@ import express from 'express';
 import {
     getAllTasksHandler,
     createTaskHandler,
+    updateTaskHandler,
 } from '../controllers/taskController.js';
 
 //middleware
 import { authenticate } from '../middleware/authenticate.js';
 import { authorizeRole } from '../middleware/authorizeRole.js';
-import { validateCreateTask } from '../middleware/taskValidators.js';
+import { 
+    validateCreateTask,
+     validateTaskId,
+      validateUpdateTask 
+} from '../middleware/taskValidators.js';
 
 const router = express.Router();
 
@@ -25,5 +30,13 @@ router.get('/tasks', authenticate, getAllTasksHandler);
 //Not authorized: 403
 //Invalid input: 400 (missing/invalid title, status, or projectId)
 router.post('/tasks', authenticate, authorizeRole('MANAGER'), validateCreateTask, createTaskHandler);
+
+//PATCH tasks/:id
+//Managers only
+//Success response: 200
+//Not authenticated: 401
+//Not authorized: 403
+//Invalid input: 400 (invalid dueDate, status, assignedTo) STILL NEED TO IMPLEMENT
+router.patch('/tasks/:id', validateTaskId, validateUpdateTask, authenticate, authorizeRole('MANAGER'), updateTaskHandler);
 
 export default router;

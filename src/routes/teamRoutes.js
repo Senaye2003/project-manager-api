@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllTeamsHandler, getTeamByIdHandler, createTeamHandler, updateTeamHandler, deleteTeamHandler } from '../controllers/teamController';
+import { getAllTeamsHandler, getTeamByIdHandler, createTeamHandler, updateTeamHandler, deleteTeamHandler } from '../controllers/teamController.js';
 
 const router = express.Router();
 

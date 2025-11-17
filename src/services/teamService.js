@@ -1,4 +1,4 @@
-import { getTeams, getTeambyId, create, update, remove } from "../repositories/teamRepo";
+import { getTeams, getTeambyId, create, update, remove } from "../repositories/teamRepo.js";
 
 export async function findTeam(){
     return await getTeams();

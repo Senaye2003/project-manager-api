@@ -1,4 +1,4 @@
-import { findTeam, findTeambyId, createTeam, updateTeam, deleteTeam } from "../services/teamService";
+import { findTeam, findTeambyId, createTeam, updateTeam, deleteTeam } from "../services/teamService.js";
 
 export async function getAllTeamsHandler(req, res){
     const teams = await findTeam();

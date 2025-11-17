@@ -7,7 +7,16 @@ export function findAll() {
 }
 
 export function findById(id) {
-  return prisma.user.findUnique({ where: { id: Number(id) } });
+  return prisma.user.findUnique({
+    where: { id: Number(id) },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      updatedAt: true
+    }
+  });
 }
 
 export function findByEmail(email) {
@@ -22,9 +31,19 @@ export function updateUser(id, data) {
   return prisma.user.update({
     where: { id: Number(id) },
     data,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      updatedAt: true
+    }
   });
 }
 
 export function deleteUser(id) {
-  return prisma.user.delete({ where: { id: Number(id) } });
+  return prisma.user.delete({
+    where: { id: Number(id) },
+    select: { id: true }
+  });
 }

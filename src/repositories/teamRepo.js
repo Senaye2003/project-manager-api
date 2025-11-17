@@ -62,3 +62,15 @@ export async function remove(id){
         throw error;
     }
 }
+
+export async function isMember(teamId, userId) {
+    const member = await prisma.teamMember.findUnique({
+        where: {
+            teamId_userId: {
+                teamId: Number(teamId),
+                userId: Number(userId)
+            }, 
+        },
+    });
+    return !!member;
+}

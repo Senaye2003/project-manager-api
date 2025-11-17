@@ -6,6 +6,7 @@ import teamRoutes from './routes/teamRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(morgan('tiny'));
 app.use(express.json());

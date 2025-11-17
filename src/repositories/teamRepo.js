@@ -67,10 +67,17 @@ export async function isMember(teamId, userId) {
     const member = await prisma.teamMember.findUnique({
         where: {
             teamId_userId: {
-                teamId: Number(teamId),
-                userId: Number(userId)
+                teamId: teamId,
+                userId: userId
             }, 
         },
     });
     return !!member;
+}
+
+export async function teamExist(name) {
+    const idx = await prisma.team.findFirst({
+        where: { name }
+    });
+    return !!idx;
 }

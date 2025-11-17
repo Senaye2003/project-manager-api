@@ -1,4 +1,4 @@
-import { getTeams, getTeambyId, create, update, remove } from "../repositories/teamRepo.js";
+import { getTeams, getTeambyId, create, update, remove, isMember } from "../repositories/teamRepo.js";
 
 export async function findTeam(){
     return await getTeams();
@@ -35,5 +35,15 @@ export async function deleteTeam(id){
         const err = new Error(`Cannot find team with id ${id}`)
         err.status = 404;
         throw err;
+    }
+}
+
+export async function isAMember(teamId, userId) {
+    const teamMember = await isMember(teamId, userId)
+    if(teamMember) return teamMember
+    else{
+        const error = new Error(`User ${userId} is not a member of Team ${teamId}`)
+        error.status = 403;
+        throw error;
     }
 }

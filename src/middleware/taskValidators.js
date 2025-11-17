@@ -65,7 +65,7 @@ export const validateCreateTask = [
 
 export const validateTaskId = [
     param('id')
-        .isInt({ min: 1 })
+        .isInt({ min: 0 })
         .withMessage('Post id must be a positive integer'),
     handleValidationErrors,
 ];

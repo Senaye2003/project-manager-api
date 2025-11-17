@@ -2,6 +2,7 @@ import {
     getAll,
     create,
     update,
+    remove,
 } from '../repositories/taskRepo.js';
 
 export async function getAllTasks() {
@@ -20,4 +21,15 @@ export async function updateTask(id, updates) {
         error.status = 404;
         throw error;
     }
+}
+
+export async function deleteTask(id) {
+    const result = await remove(id);
+    if (result) return;
+    else {
+        const error = new Error(`Cannot find task with id ${id}`);
+        error.status = 404;
+        throw error;
+    }
+
 }

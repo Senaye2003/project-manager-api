@@ -4,6 +4,7 @@ import {
     getAllTasksHandler,
     createTaskHandler,
     updateTaskHandler,
+    deleteTaskHandler,
 } from '../controllers/taskController.js';
 
 //middleware
@@ -36,7 +37,15 @@ router.post('/tasks', authenticate, authorizeRole('MANAGER'), validateCreateTask
 //Success response: 200
 //Not authenticated: 401
 //Not authorized: 403
-//Invalid input: 400 (invalid dueDate, status, assignedTo) STILL NEED TO IMPLEMENT
+//Invalid input: 400 (invalid dueDate, status, assignedTo)
+//taskId not found: 404
 router.patch('/tasks/:id', validateTaskId, validateUpdateTask, authenticate, authorizeRole('MANAGER'), updateTaskHandler);
+
+//DELETE tasks/:id
+//Managers only
+//Success response: 204
+//Not authenticated: 401
+//taskId not found: 404
+router.delete('/tasks/:id', validateTaskId, authenticate, authorizeRole('MANAGER'), deleteTaskHandler);
 
 export default router;

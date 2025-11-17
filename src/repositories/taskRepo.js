@@ -45,3 +45,15 @@ export async function update(id, updates) {
         throw error;
     }
 }
+
+export async function remove(id){
+    try {
+        const deletedTask = await prisma.task.delete({
+            where: { id },
+        });
+        return deletedTask
+    } catch (error) {
+        if (error.code === 'P2025') return null;
+        throw error;
+    }
+}

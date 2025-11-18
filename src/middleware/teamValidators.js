@@ -10,7 +10,7 @@ export const validateTeamId = [
 ]
 export const validateCreateTeam = [
     body('name')
-    .exists({ values: 'falsy'}).withMessage('name is required')
+    .exists({ checkFalsy: true }).withMessage('name is required')
     .isString().withMessage('Title must be a string')
     .isLength({ min: 3}).withMessage('Name must be at least 3 characters long')
     .custom(async(value)=>{
@@ -22,13 +22,19 @@ export const validateCreateTeam = [
         return true;
     }),
 
-    body('project')
+    body('projects')
     .optional()
     .isArray().withMessage('Project must be an array of project IDs'),
+    body('projects.*')
+    .optional()
+    .isInt({ min: 1 }).withMessage("Each project ID must be a positive integer"),
 
     body('members')
     .optional()
     .isArray().withMessage('Members must be an array of user IDs'),
+    body('members.*')
+    .optional()
+    .isInt({ min: 1 }).withMessage("Each member ID must be a positive integer"),
 
 handleValidationErrors,
 ]
@@ -36,9 +42,9 @@ handleValidationErrors,
 export const validateUpdateTeam = [
     oneOf(
         [
-            body('name').exists({ values: 'falsy'}),
-            body('project').exists({ values: 'falsy'}),
-            body('members').exists({ values: 'falsy'})
+            body('name').exists(),
+            body('project').exists(),
+            body('members').exists()
         ],
         {
             message: 'At least one field (name, project, members) is required'
@@ -60,10 +66,16 @@ export const validateUpdateTeam = [
     body('project')
     .optional()
     .isArray().withMessage('Projects must be an array of project IDs'),
+    body("projects.*")
+    .optional()
+    .isInt({ min: 1 }).withMessage("Each project ID must be a positive integer"),
 
     body('members')
     .optional()
     .isArray().withMessage('Members must be an array of user IDs'),
+    body("members.*")
+    .optional()
+    .isInt({ min: 1 }).withMessage("Each member ID must be a positive integer"),
 
 handleValidationErrors,
 ]

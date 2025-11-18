@@ -1,6 +1,6 @@
 import { findTeambyId, isAMember } from "../services/teamService.js";
 
-export async function authorizeMembership(req, res, next) {
+export async function authorizeTeamMembership(req, res, next) {
   try {
     const teamId = parseInt(req.params.teamId || req.params.id);
     const userId = req.user?.id;
@@ -16,7 +16,7 @@ export async function authorizeMembership(req, res, next) {
         throw err;
     }
     const team = await findTeambyId(teamId);
-    const isMember = await isAMember(teamId, userId);
+    await isAMember(teamId, userId);
 
     req.team = team
     next()

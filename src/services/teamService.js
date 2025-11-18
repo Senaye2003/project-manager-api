@@ -24,7 +24,7 @@ export async function updateTeam(id, updates){
     else {
         const err = new Error(`Cannot find team with id ${id}`);
         err.status = 404;
-        throw error;
+        throw err;
     }
 }
 

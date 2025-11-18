@@ -7,10 +7,14 @@ export async function getTeams(){
             name: true,
             projects: {
                 select: {
-                    id: true
+                    id: true,
                 }
             },
-            members: true,
+            members: {
+                select: {
+                    id: true,
+                }
+            },
             createdAt: true
         }
     })
@@ -18,16 +22,20 @@ export async function getTeams(){
 
 export async function getTeambyId(id){
     return await prisma.team.findUnique({
-        where: {id},
+        where: { id },
         select: {
             id: true,
             name: true,
             projects: {
                 select: {
-                    id: true
+                    id: true,
                 }
             },
-            members: true,
+            members: {
+                select: {
+                    id: true,
+                }
+            },
             createdAt: true
         }
     })
@@ -42,8 +50,8 @@ export async function create(data){
 export async function update(id, updates){
     try{
         return await prisma.team.update({
-            where: {id},
-            data: updateUser,
+            where: { id },
+            data: updates,
         })
     } catch (error) {
         if (error.code ==='P2025') return null;
@@ -54,7 +62,7 @@ export async function update(id, updates){
 export async function remove(id){
     try {
         const deletedTeam = await prisma.team.delete({
-            where: {id}
+            where: { id }
         })
         return deletedTeam;
     } catch (error) {

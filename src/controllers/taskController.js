@@ -1,5 +1,6 @@
 import {
     getAllTasks,
+    getMyTasks,
     createTask,
     updateTask,
     deleteTask,
@@ -8,6 +9,11 @@ import {
 export async function getAllTasksHandler(req, res) {
     const tasks = await getAllTasks();
     res.status(200).json(tasks);
+}
+
+export async function getMyTasksHandler(req,res) {
+    const myTasks = await getMyTasks(req.user.id);
+    res.status(200).json(myTasks);
 }
 
 export async function createTaskHandler(req, res) {

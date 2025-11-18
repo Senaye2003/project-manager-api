@@ -1,5 +1,6 @@
 import {
     getAll,
+    getMy,
     create,
     update,
     remove,
@@ -7,6 +8,10 @@ import {
 
 export async function getAllTasks() {
     return await getAll();
+}
+
+export async function getMyTasks(id) {
+    return await getMy(id);
 }
 
 export async function createTask(task) {

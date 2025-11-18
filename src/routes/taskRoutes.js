@@ -2,6 +2,7 @@ import express from 'express';
 
 import {
     getAllTasksHandler,
+    getMyTasksHandler,
     createTaskHandler,
     updateTaskHandler,
     deleteTaskHandler,
@@ -23,6 +24,12 @@ const router = express.Router();
 //Success response: 200
 //Not authenticated: 401
 router.get('/tasks', authenticate, getAllTasksHandler);
+
+//GET api/tasks/me -> return tasks assigned to logged in user
+//Success response: 200
+//Not authenticated: 401
+router.get('/tasks/me', authenticate, getMyTasksHandler);
+
 
 //POST api.tasks -> create a new task assigned to a team member (byId) for a specific project (byId)
 //Managers only 

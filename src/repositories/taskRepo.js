@@ -1,7 +1,7 @@
 import prisma from '../config/db.js';
 
 //currently returns assignedTo (id of user the task, should also return the name)
-export async function getAll(){
+export async function getAll() {
     const tasks = await prisma.task.findMany({
         select: {
             id: true,
@@ -26,7 +26,34 @@ export async function getAll(){
     return tasks;
 }
 
-export async function create(task){
+export async function getMy(id) {
+    const userId = parseInt(id);
+    const tasks = await prisma.task.findMany({
+        where: { assignedTo: userId },
+        select: {
+            id: true,
+            projectId: true,
+            title: true,
+            status: true,
+            assignedTo: true,
+            dueDate: true,
+
+            createdAt: true,
+            updatedAt: true,
+            //only return the name and id fields of the asignee
+            assignee: {
+                select: {
+                    name: true,
+                    id: true
+                }
+            }
+        }
+    })
+
+    return tasks;
+}
+
+export async function create(task) {
     const newTask = await prisma.task.create({
         data: task,
     });
@@ -46,7 +73,7 @@ export async function update(id, updates) {
     }
 }
 
-export async function remove(id){
+export async function remove(id) {
     try {
         const deletedTask = await prisma.task.delete({
             where: { id },

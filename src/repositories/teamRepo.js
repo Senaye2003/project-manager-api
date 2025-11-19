@@ -8,11 +8,17 @@ export async function getTeams(){
             projects: {
                 select: {
                     id: true,
+                    name: true, 
                 }
             },
             members: {
-                select: {
-                    id: true,
+                select: { 
+                    user: {
+                        select: {
+                            id: true, 
+                            name: true,
+                        }
+                    }
                 }
             },
             createdAt: true
@@ -32,8 +38,13 @@ export async function getTeambyId(id){
                 }
             },
             members: {
-                select: {
-                    id: true,
+                select: { 
+                    user: {
+                        select: {
+                            id: true, 
+                            name: true,
+                        }
+                    }
                 }
             },
             createdAt: true

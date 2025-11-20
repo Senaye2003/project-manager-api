@@ -51,10 +51,23 @@ export function getUserById(id) {
 }
 
 export async function updateUserRole(id, role) {
-  if (!role) throw new Error('Role is required.');
+  const user = await findById(id);
+  if (!user) {
+    const error = new Error('Cannot find user');
+    error.status = 404;
+    throw error;
+  }
+
   return updateUser(id, { role });
 }
 
 export async function removeUser(id) {
+  const user = await findById(id);
+  if (!user) {
+    const error = new Error('Cannot find user');
+    error.status = 404;
+    throw error;
+  }
+
   return deleteUser(id);
 }

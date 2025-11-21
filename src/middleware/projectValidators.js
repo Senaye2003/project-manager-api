@@ -1,7 +1,8 @@
 import { param, query, body, oneOf } from 'express-validator';
 import { handleValidationErrors } from './handleValidationErrors.js';
-import { checkIfTeamExists } from '../repositories/teamRepo.js'; //TODO: create teamRepo.js
-import { checkIfUserExists } from '../repositories/userRepo.js'; //TODO: update userRepo.js
+import { teamIdExist } from '../repositories/teamRepo.js'; //TODO: create teamRepo.js
+import { userIdExist } from '../repositories/userRepo.js'; //TODO: update userRepo.js
+import { findByNameAndTeam, getById as getProjectById } from '../repositories/projectRepo.js';
 
 export const validateProjectId = [
   param('id')
@@ -40,7 +41,7 @@ export const validateProjectQuery = [
 
 export const validateCreateProject = [
   body('name')
-    .exists({ values: 'falsy' })
+    .exists({ checkFalsy: true })
     .withMessage('name is required')
     .bail()
     .trim()
@@ -49,10 +50,19 @@ export const validateCreateProject = [
     .withMessage('name must be a string')
     .bail()
     .isLength({ min: 3 })
-    .withMessage('name must be at least 3 characters'),
+    .withMessage('name must be at least 3 characters')
+    .custom(async (value, { req }) => {
+    const teamId = req.body.teamId ? Number(req.body.teamId) : undefined;
+    if (!teamId) return true; // teamId validation will catch missing team
+    const existing = await findByNameAndTeam(value, teamId);
+    if (existing) {
+      throw new Error(`A project with name '${value}' already exists for team ${teamId}`);
+    }
+    return true;
+  }),
 
   body('description')
-    .exists({ values: 'falsy' })
+    .exists({ checkFalsy: true })
     .withMessage('description is required')
     .bail()
     .trim()
@@ -76,30 +86,32 @@ export const validateCreateProject = [
     .withMessage('status must be one of the allowed ProjectStatus values'),
 
     body('teamId')
-    .exists({ values: 'falsy' })
+    .exists({ checkFalsy: true })
     .withMessage('project must be assigned to a team')
     .bail()
     .trim()
     .escape()
+    .toInt()
     .isInt()
     .withMessage('teamId must be an integer')
     .custom(async (value) => {
-      if (value && !(await checkIfTeamExists(value))) {
+      if (value && !(await teamIdExist(value))) {
         throw new Error(`teamId: ${value} does not correspond to an existing team`);
       }
       return true;
       }),
 
     body('projectManagerId')
-    .exists({ values: 'falsy' })
+    .exists({ checkFalsy: true })
     .withMessage('project must be assigned a manager')
     .bail()
     .trim()
     .escape()
+    .toInt()
     .isInt()
     .withMessage('projectManagerId must be an integer')
     .custom(async (value) => {
-      if (value && !(await checkIfUserExists(value))) {
+      if (value && !(await userIdExist(value))) {
         throw new Error(`projectManagerId: ${value} does not correspond to an existing user`);
       }
       return true;
@@ -109,14 +121,14 @@ export const validateCreateProject = [
 ];
 
 export const validateUpdateProject = [
-  oneOf(
+    oneOf(
     [
-      body('name').exists({ values: 'falsy' }),
-      body('description').exists({ values: 'falsy' }),
-      body('status').exists({ values: 'falsy' }),
-      body('endDate').exists({ values: 'falsy' }),
-      body('teamId').exists({ values: 'falsy' }),
-      body('projectManagerId').exists({ values: 'falsy' }),
+      body('name').exists({ checkFalsy: true }),
+      body('description').exists({ checkFalsy: true }),
+      body('status').exists({ checkFalsy: true }),
+      body('endDate').exists({ checkFalsy: true }),
+      body('teamId').exists({ checkFalsy: true }),
+      body('projectManagerId').exists({ checkFalsy: true }),
     ],
     {
       message:
@@ -166,10 +178,11 @@ export const validateUpdateProject = [
     .optional()
     .trim()
     .escape()
+    .toInt()
     .isInt()
     .withMessage('teamId must be an integer')
     .custom(async (value) => {
-      if (value && !(await checkIfTeamExists(value))) {
+      if (value && !(await teamIdExist(value))) {
         throw new Error(`teamId: ${value} does not correspond to an existing team`);
       }
       return true;
@@ -179,14 +192,34 @@ export const validateUpdateProject = [
     .optional()
     .trim()
     .escape()
+    .toInt()
     .isInt()
     .withMessage('projectManagerId must be an integer')
     .custom(async (value) => {
-      if (value && !(await checkIfUserExists(value))) {
+      if (value && !(await userIdExist(value))) {
         throw new Error(`projectManagerId: ${value} does not correspond to an existing user`);
       }
       return true;
       }),
+
+    // Ensure updated name/team combination remains unique
+    body().custom(async (_value, { req }) => {
+      // Only run if name or teamId present in the update
+      if (!req.body.name && !req.body.teamId) return true;
+
+      const projectId = parseInt(req.params.id);
+      const existing = await getProjectById(projectId);
+      if (!existing) return true; // getProjectById service will error later if missing
+
+      const newName = req.body.name ?? existing.name;
+      const newTeamId = req.body.teamId ? Number(req.body.teamId) : existing.teamId;
+
+      const conflict = await findByNameAndTeam(newName, newTeamId);
+      if (conflict && conflict.id !== projectId) {
+        throw new Error(`A project with name '${newName}' already exists for team ${newTeamId}`);
+      }
+      return true;
+    }),
 
   handleValidationErrors,
 ];

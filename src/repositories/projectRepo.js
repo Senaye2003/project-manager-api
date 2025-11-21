@@ -54,6 +54,13 @@ export async function create(project) {
   return newProject;
 }
 
+export async function findByNameAndTeam(name, teamId) {
+  return await prisma.project.findFirst({
+    where: { name, teamId },
+    select: { id: true, name: true, teamId: true },
+  });
+}
+
 export async function update(id, updates) {
   try {
     const updatedProject = await prisma.project.update({

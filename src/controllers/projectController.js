@@ -36,10 +36,10 @@ export async function createProjectHandler(req, res) {
   const data = {
     name: req.body.name,
     description: req.body.description,
-    status: req.body.status,
+    status: req.body.status ?? 'TO_DO',
     startDate: req.body.startDate,
-    teamId: req.body.teamId,
-    projectManagerId: req.body.projectManagerId,
+    teamId: req.body.teamId ? parseInt(req.body.teamId) : undefined,
+    projectManagerId: req.body.projectManagerId ? parseInt(req.body.projectManagerId) : undefined,
   };
   let newProject = await createProject(data);
   res.status(201).json(newProject);
@@ -53,8 +53,8 @@ export async function updateProjectHandler(req, res) {
   if (req.body.status) updates.status = req.body.status;
   if (req.body.startDate) updates.startDate = req.body.startDate;
   if (req.body.endDate) updates.endDate = req.body.endDate;
-  if (req.body.teamId) updates.teamId = req.body.teamId;
-  if (req.body.projectManagerId) updates.projectManagerId = req.body.projectManagerId;
+  if (req.body.teamId) updates.teamId = parseInt(req.body.teamId);
+  if (req.body.projectManagerId) updates.projectManagerId = parseInt(req.body.projectManagerId);
 
   const updatedProject = await updateProject(id, updates);
   res.status(200).json(updatedProject);

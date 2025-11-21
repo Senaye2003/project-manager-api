@@ -47,3 +47,21 @@ export function deleteUser(id) {
     select: { id: true }
   });
 }
+
+export async function userExist(name) {
+    const idx = await prisma.user.findFirst({
+        where: { name }
+    });
+    return !!idx;
+}
+
+export async function userIdExist(id) {
+    const userId = typeof id === 'string' ? parseInt(id) : id;
+    if (Number.isNaN(userId)) return false;
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true },
+    });
+    return !!user;
+}

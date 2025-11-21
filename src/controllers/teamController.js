@@ -1,4 +1,4 @@
-import { findTeam, findTeambyId, createTeam, updateTeam, deleteTeam } from "../services/teamService.js";
+import { findTeam, findTeambyId, createTeam, updateTeam, deleteTeam, addMember, removeMember } from "../services/teamService.js";
 
 export async function getAllTeamsHandler(req, res){
     const teams = await findTeam();
@@ -21,6 +21,20 @@ export async function createTeamHandler(req, res){
     };
     let newTeam = await createTeam(data);
     res.status(201).json(newTeam);
+}
+
+export async function addMemberHandler(req, res) {
+    const teamId = parseInt(req.params.id);
+    const userId = req.body.userId ? parseInt(req.body.userId) : null;
+    const membership = await addMember(teamId, userId);
+    res.status(201).json(membership);
+}
+
+export async function removeMemberHandler(req, res) {
+    const teamId = parseInt(req.params.id);
+    const userId = parseInt(req.params.userId);
+    await removeMember(teamId, userId);
+    res.status(204).send();
 }
 
 export async function updateTeamHandler(req, res){

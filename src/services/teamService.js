@@ -1,4 +1,4 @@
-import { getTeams, getTeambyId, create, update, remove, isMember } from "../repositories/teamRepo.js";
+import { getTeams, getTeambyId, create, update, remove, isMember, createMember, deleteMember } from "../repositories/teamRepo.js";
 
 export async function findTeam(){
     return await getTeams();
@@ -45,5 +45,33 @@ export async function isAMember(teamId, userId) {
         const error = new Error(`User ${userId} is not a member of Team ${teamId}`)
         error.status = 403;
         throw error;
+    }
+}
+
+export async function addMember(teamId, userId) {
+    const already = await isMember(teamId, userId);
+    if (already) {
+        const err = new Error(`User ${userId} is already a member of Team ${teamId}`);
+        err.status = 409;
+        throw err;
+    }
+
+    return await createMember(teamId, userId);
+}
+
+export async function removeMember(teamId, userId) {
+    const exists = await isMember(teamId, userId);
+    if (!exists) {
+        const err = new Error(`User ${userId} is not a member of Team ${teamId}`);
+        err.status = 404;
+        throw err;
+    }
+
+    const deleted = await deleteMember(teamId, userId);
+    if (deleted) return deleted;
+    else {
+        const err = new Error(`Cannot remove membership for user ${userId} in team ${teamId}`);
+        err.status = 404;
+        throw err;
     }
 }

@@ -94,9 +94,40 @@ export async function isMember(teamId, userId) {
     return !!member;
 }
 
+export async function createMember(teamId, userId) {
+    const tId = typeof teamId === 'string' ? parseInt(teamId) : teamId;
+    const uId = typeof userId === 'string' ? parseInt(userId) : userId;
+    return await prisma.teamMember.create({ data: { teamId: tId, userId: uId } });
+}
+
+export async function deleteMember(teamId, userId) {
+    const tId = typeof teamId === 'string' ? parseInt(teamId) : teamId;
+    const uId = typeof userId === 'string' ? parseInt(userId) : userId;
+    try {
+        const deleted = await prisma.teamMember.delete({
+            where: { teamId_userId: { teamId: tId, userId: uId } },
+        });
+        return deleted;
+    } catch (error) {
+        if (error.code === 'P2025') return null;
+        throw error;
+    }
+}
+
 export async function teamExist(name) {
     const idx = await prisma.team.findFirst({
         where: { name }
     });
     return !!idx;
+}
+
+export async function teamIdExist(id) {
+    const teamId = typeof id === 'string' ? parseInt(id) : id;
+    if (Number.isNaN(teamId)) return false;
+
+    const team = await prisma.team.findUnique({
+        where: { id: teamId },
+        select: { id: true },
+    });
+    return !!team;
 }

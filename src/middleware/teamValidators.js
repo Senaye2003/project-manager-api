@@ -1,6 +1,7 @@
 import { body, oneOf, param } from "express-validator";
 import { handleValidationErrors } from "./handleValidationErrors.js";
 import { teamExist } from "../repositories/teamRepo.js";
+import { userIdExist } from "../repositories/userRepo.js";
 
 export const validateTeamId = [
     param('id')
@@ -37,6 +38,19 @@ export const validateCreateTeam = [
     .isInt({ min: 1 }).withMessage("Each member ID must be a positive integer"),
 */
 handleValidationErrors,
+]
+
+export const validateDeleteTeamMember = [
+    param('userId')
+        .isInt({ min: 1 }).withMessage('userId must be a positive integer')
+        .bail()
+        .custom(async (value) => {
+            if (value && !(await userIdExist(value))) {
+                throw new Error(`userId: ${value} does not correspond to an existing user`);
+            }
+            return true;
+        }),
+    handleValidationErrors,
 ]
 
 export const validateUpdateTeam = [
@@ -81,4 +95,20 @@ export const validateUpdateTeam = [
     .isInt({ min: 1 }).withMessage("Each member ID must be a positive integer"),
     */
 handleValidationErrors,
+]
+
+export const validateAddTeamMember = [
+    body('userId')
+        .exists({ checkFalsy: true }).withMessage('userId is required')
+        .trim()
+        .escape()
+        .isInt({ min: 1 }).withMessage('userId must be a positive integer')
+        .bail()
+        .custom(async (value) => {
+            if (value && !(await userIdExist(value))) {
+                throw new Error(`userId: ${value} does not correspond to an existing user`);
+            }
+            return true;
+        }),
+    handleValidationErrors,
 ]

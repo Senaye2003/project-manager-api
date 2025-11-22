@@ -34,16 +34,28 @@ export async function createTeamHandler(req, res, next){
     }
 }
 
-export async function updateTeamHandler(req, res){
-    const id = parseInt(req.params.id)
-    const updates = {}
-    if (req.body.name) updates.name = req.body.name;
-    /*
-    if (req.body.members) updates.members = req.body.members;
-    if (req.body.projects) updates.projects = req.body.projects;
-    */
+export async function updateTeamHandler(req, res, next){
+    try{
+        const id = parseInt(req.params.id)
+        const updates = {}
+        if (req.body.name) updates.name = req.body.name;
+        /*
+        if (req.body.members) updates.members = req.body.members;
+        if (req.body.projects) updates.projects = req.body.projects;
+        */
+       if (updates.name){
+        const exist = await teamExist(updates.name);
+        if (exist){
+            const err = new Error("Duplicate team name exists")
+            err.status = 409;
+            return next(err);
+       } 
+    }
     const updatedTeam = await updateTeam(id, updates)
     res.status(200).json(updatedTeam);
+    } catch (error){
+        next(error)
+    }
 }
 
 export async function deleteTeamHandler(req, res) {

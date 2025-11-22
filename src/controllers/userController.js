@@ -69,9 +69,23 @@ export async function updateRole(req, res) {
   }
 }
 
-export async function updateCurrentUserInfoHandler(req, res) {
-  const updated = await updateCurrentUserInfo(req.user.id, req.body);
-  res.status(200).json(updated);
+export async function updateCurrentUserInfoHandler(req, res, next) {
+  try {
+    const userId = req.user.id;  
+    const data = req.body;
+
+    const updatedUser = await updateCurrentUserInfo(userId, data);
+
+    res.json({
+      id: updatedUser.id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      updatedAt: updatedUser.updatedAt,
+    });
+  } catch (err) {
+    next(err);
+  }
 }
 
 export async function deleteUser(req, res) {

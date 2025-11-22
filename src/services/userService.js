@@ -73,53 +73,33 @@ export async function removeUser(id) {
   return deleteUser(id);
 }
 
-export async function updateCurrentUserInfo(requestingUser, data) {
-  const userId = requestingUser.id;
-
-  // 1. Validate user exists
-  const target = await findById(userId);
-  if (!target) {
-    const err = new Error("User not found");
-    err.status = 404;
-    throw err;
-  }
-
+export async function updateCurrentUserInfo(userId, data) {
   const updates = {};
 
-  // 2. Validate UNIQUE email
+  // EMAIL UPDATE — must be unique except for yourself
   if (data.email) {
     const existing = await findByEmail(data.email);
 
-    // If another user has this email → conflict
     if (existing && existing.id !== userId) {
-      const err = new Error("Email already in use");
+      const err = new Error('Email already in use');
       err.status = 409;
       throw err;
     }
-
     updates.email = data.email;
   }
 
-  // 3. Hash password if provided
+  // PASSWORD UPDATE
   if (data.password) {
     updates.password = await bcrypt.hash(data.password, 10);
   }
 
-  // 4. Name update allowed for all users
+  // NAME UPDATE (optional but allowed)
   if (data.name) {
     updates.name = data.name;
   }
 
-  // 5. Managers CANNOT update their own role here
-  if (data.role) {
-    const err = new Error("You cannot update your role here.");
-    err.status = 403;
-    throw err;
-  }
-
-  // 6. Ensure at least one field is provided
   if (Object.keys(updates).length === 0) {
-    const err = new Error("Please provide at least one field to update.");
+    const err = new Error("No valid fields to update");
     err.status = 400;
     throw err;
   }

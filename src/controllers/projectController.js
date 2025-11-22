@@ -41,6 +41,11 @@ export async function createProjectHandler(req, res) {
     teamId: req.body.teamId ? parseInt(req.body.teamId) : undefined,
     projectManagerId: req.body.projectManagerId ? parseInt(req.body.projectManagerId) : undefined,
   };
+  if (req.body.startDate){
+        //convert startDate to ISOstring so Prisma doesn't get mad (wants a full ISO8601)
+        const date = new Date(req.body.startDate);
+        data.startDate = date.toISOString();
+  };
   let newProject = await createProject(data);
   res.status(201).json(newProject);
 }
@@ -51,11 +56,20 @@ export async function updateProjectHandler(req, res) {
   if (req.body.name) updates.name = req.body.name;
   if (req.body.description) updates.description = req.body.description;
   if (req.body.status) updates.status = req.body.status;
-  if (req.body.startDate) updates.startDate = req.body.startDate;
-  if (req.body.endDate) updates.endDate = req.body.endDate;
+  if (req.body.startDate) {
+    updates.startDate = req.body.startDate;
+    //convert startDate to ISOstring so Prisma doesn't get mad (wants a full ISO8601)
+    const date = new Date(req.body.startDate);
+    updates.startDate = date.toISOString();
+  };
+  if (req.body.endDate) {
+    updates.endDate = req.body.endDate;
+    //convert endDate to ISOstring so Prisma doesn't get mad (wants a full ISO8601)
+    const date = new Date(req.body.endDate);
+    updates.endDate = date.toISOString();
+  };
   if (req.body.teamId) updates.teamId = parseInt(req.body.teamId);
   if (req.body.projectManagerId) updates.projectManagerId = parseInt(req.body.projectManagerId);
-
   const updatedProject = await updateProject(id, updates);
   res.status(200).json(updatedProject);
 }

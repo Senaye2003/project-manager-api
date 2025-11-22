@@ -1,7 +1,7 @@
 import { param, query, body, oneOf } from 'express-validator';
 import { handleValidationErrors } from './handleValidationErrors.js';
-import { teamIdExist } from '../repositories/teamRepo.js'; //TODO: create teamRepo.js
-import { userIdExist } from '../repositories/userRepo.js'; //TODO: update userRepo.js
+import { teamIdExist } from '../repositories/teamRepo.js';
+import { userIdExist, findById as getUserById } from '../repositories/userRepo.js';
 import { findByNameAndTeam, getById as getProjectById } from '../repositories/projectRepo.js';
 
 export const validateProjectId = [
@@ -114,8 +114,21 @@ export const validateCreateProject = [
       if (value && !(await userIdExist(value))) {
         throw new Error(`projectManagerId: ${value} does not correspond to an existing user`);
       }
+      // ensure the referenced user is a MANAGER
+      const user = await getUserById(value);
+      if (!user || user.role !== 'MANAGER') {
+        throw new Error(`projectManagerId: ${value} must reference a user with role MANAGER`);
+      }
       return true;
       }),
+    
+    body('startDate')
+    .optional()
+    .trim()
+    .escape()
+    .isISO8601()
+    .withMessage('startDate must be in the format YYYY-MM-DD')
+    .bail(),
 
   handleValidationErrors,
 ];
@@ -126,13 +139,14 @@ export const validateUpdateProject = [
       body('name').exists({ checkFalsy: true }),
       body('description').exists({ checkFalsy: true }),
       body('status').exists({ checkFalsy: true }),
+      body('startDate').exists({ checkFalsy: true }),
       body('endDate').exists({ checkFalsy: true }),
       body('teamId').exists({ checkFalsy: true }),
       body('projectManagerId').exists({ checkFalsy: true }),
     ],
     {
       message:
-        'At least one field (name, description, status, endDate, teamId, projectManagerId) must be provided',
+        'At least one field (name, description, status, startDate, endDate, teamId, projectManagerId) must be provided',
     },
   ),
 
@@ -166,12 +180,20 @@ export const validateUpdateProject = [
     .isIn(['TO_DO','IN_PROGRESS','UNDER_REVIEW','COMPLETE','CANCELLED'])
     .withMessage('status must be one of the allowed ProjectStatus values'),
 
+    body('startDate')
+    .optional()
+    .trim()
+    .escape()
+    .isISO8601()
+    .withMessage('startDate must be in the format YYYY-MM-DD')
+    .bail(),
+
     body('endDate')
     .optional()
     .trim()
     .escape()
-    .isDate()
-    .withMessage('endDate must be a date')
+    .isISO8601()
+    .withMessage('endDate must be in the format YYYY-MM-DD')
     .bail(),
 
     body('teamId')
@@ -198,6 +220,10 @@ export const validateUpdateProject = [
     .custom(async (value) => {
       if (value && !(await userIdExist(value))) {
         throw new Error(`projectManagerId: ${value} does not correspond to an existing user`);
+      }
+      const user = await getUserById(value);
+      if (!user || user.role !== 'MANAGER') {
+        throw new Error(`projectManagerId: ${value} must reference a user with role MANAGER`);
       }
       return true;
       }),

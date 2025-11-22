@@ -1,4 +1,5 @@
 import { findTeam, findTeambyId, createTeam, updateTeam, deleteTeam } from "../services/teamService.js";
+import { teamExist } from "../repositories/teamRepo.js";
 
 export async function getAllTeamsHandler(req, res){
     const teams = await findTeam();
@@ -12,15 +13,25 @@ export async function getTeamByIdHandler(req, res){
 
 }
 
-export async function createTeamHandler(req, res){
-    const data = {
-        name: req.body.name,
-        /*
-        members: req.body.members,
-        projects: req.body.projects */
+export async function createTeamHandler(req, res, next){
+    try{
+        const data = {
+            name: req.body.name,
+            /*
+            members: req.body.members,
+            projects: req.body.projects */
     };
+    const exists = await teamExist(data.name)
+    if (exists){
+        const err = new Error("Duplicate team name exists")
+        err.status = 409;
+        return next(err);
+    }
     let newTeam = await createTeam(data);
     res.status(201).json(newTeam);
+    } catch(error){
+        next(error);
+    }
 }
 
 export async function updateTeamHandler(req, res){

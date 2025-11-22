@@ -6,6 +6,7 @@ import {
   getMe,
   updateRole,
   deleteUser,
+  updateCurrentUserInfoHandler
 } from '../controllers/userController.js';
 
 import { authorizeRole } from '../middleware/authorizeRole.js';
@@ -24,5 +25,7 @@ router.delete('/users/:id', authenticate, authorizeRole(['MANAGER']), deleteUser
 
 // Protected (any logged-in user)
 router.get('/users/me', authenticate, getMe);
+router.patch('/users/me', authenticate, updateCurrentUserInfoHandler);
+
 
 export default router;

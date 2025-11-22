@@ -5,6 +5,7 @@ import {
   getUserById,
   updateUserRole,
   removeUser,
+  updateCurrentUserInfo,
 } from '../services/userService.js';
 
 export async function signupUser(req, res) {
@@ -66,6 +67,11 @@ export async function updateRole(req, res) {
     const status = err.status || 400;
     res.status(status).json({ error: err.message });
   }
+}
+
+export async function updateCurrentUserInfoHandler(req, res) {
+  const updated = await updateCurrentUserInfo(req.user.id, req.body);
+  res.status(200).json(updated);
 }
 
 export async function deleteUser(req, res) {

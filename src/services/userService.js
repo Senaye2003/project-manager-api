@@ -73,52 +73,56 @@ export async function removeUser(id) {
   return deleteUser(id);
 }
 
-export async function updateCurrentUserInfo(userId, data) {
- 
-  if (!data.email && !data.password) {
-    const error = new Error('At least one field (email or password) required');
-    error.status = 400;
-    throw error;
+export async function updateCurrentUserInfo(requestingUser, data) {
+  const userId = requestingUser.id;
+
+  // 1. Validate user exists
+  const target = await findById(userId);
+  if (!target) {
+    const err = new Error("User not found");
+    err.status = 404;
+    throw err;
   }
 
   const updates = {};
 
-  
-  if (Object.prototype.hasOwnProperty.call(data, 'email')) {
-    const email = data.email?.trim() || '';
+  // 2. Validate UNIQUE email
+  if (data.email) {
+    const existing = await findByEmail(data.email);
 
-    
-    if (email === '') {
-      const err = new Error('Email cannot be empty');
-      err.status = 400;
+    // If another user has this email → conflict
+    if (existing && existing.id !== userId) {
+      const err = new Error("Email already in use");
+      err.status = 409;
       throw err;
     }
 
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      const err = new Error('Invalid email');
-      err.status = 400;
-      throw err;
-    }
-
-    updates.email = email;
+    updates.email = data.email;
   }
 
-  
-  if (Object.prototype.hasOwnProperty.call(data, 'password')) {
-    const password = data.password?.trim() || '';
-
-    
-    if (password.length < 8) {
-      const err = new Error('Password too short');
-      err.status = 400;
-      throw err;
-    }
-
-    updates.password = await bcrypt.hash(password, 10);
+  // 3. Hash password if provided
+  if (data.password) {
+    updates.password = await bcrypt.hash(data.password, 10);
   }
 
-  const updatedUser = await updateUser(userId, updates);
-  return updatedUser;
+  // 4. Name update allowed for all users
+  if (data.name) {
+    updates.name = data.name;
+  }
+
+  // 5. Managers CANNOT update their own role here
+  if (data.role) {
+    const err = new Error("You cannot update your role here.");
+    err.status = 403;
+    throw err;
+  }
+
+  // 6. Ensure at least one field is provided
+  if (Object.keys(updates).length === 0) {
+    const err = new Error("Please provide at least one field to update.");
+    err.status = 400;
+    throw err;
+  }
+
+  return updateUser(userId, updates);
 }

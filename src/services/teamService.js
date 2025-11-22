@@ -29,13 +29,22 @@ export async function updateTeam(id, updates){
 }
 
 export async function deleteTeam(id){
-    const deleted = await remove(id);
-    if (deleted) return deleted
-    else{
+    try{
+        const deleted = await remove(id);
+        if (deleted) return deleted
         const err = new Error(`Cannot find team with id ${id}`)
         err.status = 404;
         throw err;
+    } catch (error){
+        if (error.code === 'P2003') {
+      const err = new Error(
+        `Cannot delete team ${id}: there are projects still associated with this team`
+      );
+      err.status = 409;
+      throw err;
     }
+    }
+    
 }
 
 export async function isAMember(teamId, userId) {

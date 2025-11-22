@@ -12,7 +12,8 @@ export const validateCreateTeam = [
     body('name')
     .exists({ checkFalsy: true }).withMessage('name is required')
     .isString().withMessage('Title must be a string')
-    .isLength({ min: 3}).withMessage('Name must be at least 3 characters long')
+    .isLength({ min: 3}).withMessage('Name must be at least 3 characters long'),
+/*
     .custom(async(value)=>{
         if (!value) return true;
         const exist = await teamExist(value)
@@ -21,7 +22,7 @@ export const validateCreateTeam = [
         }
         return true;
     }),
-/*
+
     body('projects')
     .optional()
     .isArray().withMessage('Project must be an array of project IDs'),
@@ -57,6 +58,7 @@ export const validateUpdateTeam = [
     .exists({ checkFalsy: true }).withMessage('Name is the only updateable field')
     .isString().withMessage('Title must be a string')
     .isLength({ min: 3}).withMessage('Name must be at elast 3 characters long')
+ /*    
     .custom(async(value)=>{
         if (!value) return true;
         const exist = await teamExist(value)
@@ -65,7 +67,7 @@ export const validateUpdateTeam = [
         }
         return true;
     }),
-    /*
+   
     body('project')
     .optional()
     .isArray().withMessage('Projects must be an array of project IDs'),
@@ -79,6 +81,6 @@ export const validateUpdateTeam = [
     body("members.*")
     .optional()
     .isInt({ min: 1 }).withMessage("Each member ID must be a positive integer"),
-    */
+    */,
 handleValidationErrors,
 ]

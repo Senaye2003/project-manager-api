@@ -34,7 +34,16 @@ export const validateCreateTask = [
         .bail()
         .isInt({ min: 0 })
         .withMessage('projectId must be a positive integer')
-        .toInt(),
+        .toInt()
+        .bail()
+        .custom(async (value) => {
+            const project = await prisma.project.findUnique({
+                where: { id: value },
+            });
+            if (!project) {
+                throw new Error(`projectId: ${value} does not correspond to a valid projectId`);
+            }
+        }),
 
     //check that assignedTo is a user that actually exists
     body('assignedTo')

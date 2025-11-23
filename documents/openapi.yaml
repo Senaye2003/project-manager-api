@@ -1,0 +1,8 @@
+openapi: '3.1.0'
+info:
+  title: 'Task API'
+  version: '1.0.0'
+servers:
+  - url: https://localhost:8001
+    description: Local Dev 
+paths: {}

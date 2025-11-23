@@ -1,8 +1,10 @@
-export function authorizeRole(roles) {
+export function authorizeRole(...allowedRoles) {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Forbidden: insufficient permissions' });
+    if (!allowedRoles.includes(req.user.role)) {
+      const error = new Error('Forbidden: insufficient permission');
+      error.status = 403;
+      return next(error);
     }
-    next();
+    return next();
   };
 }

@@ -1,6 +1,11 @@
 type: object
 properties:
+  id:
+    readOnly: true
+    type: integer
+    example: 1
   title:
+    readOnly: true
     type: string
     example: Design Dashboard
   status:
@@ -12,15 +17,25 @@ properties:
      - COMPLETE
      - CANCELLED
     example: TO_DO
+  dueDate:
+    type: string
+    format: date-time
+    example: 2025-12-12
+  createdAt:
+    readOnly: true
+    type: string
+    format: date-time
+    example: 2025-08-05
+  updatedAt:
+    readOnly: true
+    type: string
+    format: date-time
+    example: 2025-08-06
   projectId:
+    readOnly: true
     type: integer
     example: 1
   assignedTo:
     type: integer
     description: ID of the user that the task is assigned to
     example: 1
-  dueDate:
-    type: string
-    format: date-time
-    example: 2025-12-12
-  

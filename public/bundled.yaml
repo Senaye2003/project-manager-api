@@ -19,17 +19,9 @@ tags:
 paths:
   /api/teams:
     get:
-      summary: List all /teams
+      summary: List all teams
       tags:
         - Teams
-      parameters:
-        - name: name
-          in: query
-          required: false
-          description: Filter teams by name
-          schema:
-            type: string
-            example: Team 1
       responses:
         '200':
           description: OK
@@ -151,12 +143,22 @@ paths:
       summary: Add a member to a team with {id}
       tags:
         - Team Members
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          description: Team id
+          schema:
+            type: integer
+            example: 1
       requestBody:
         require: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Team'
+            example:
+              userId: 2
       responses:
         '201':
           description: Member added created successfully
@@ -179,13 +181,20 @@ paths:
       tags:
         - Team Members
       parameters:
-        - name: id
+        - name: teamId
           in: path
           required: true
           description: Delete member from teams with id
           schema:
             type: integer
             example: 1
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to remove from the team
+          schema:
+            type: integer
+            example: 2
       responses:
         '204':
           description: Schema of Team
@@ -232,7 +241,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/CreateTaskResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -267,13 +276,18 @@ paths:
           schema:
             type: integer
             example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTask'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/UpdateTask'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -297,9 +311,6 @@ paths:
       responses:
         '204':
           description: No content
-          content:
-            application/json:
-              schema: null
         '401':
           $ref: '#/components/responses/Unauthenticated'
         '403':
@@ -527,6 +538,9 @@ components:
           readOnly: true
           type: integer
           example: 1
+        projectId:
+          type: integer
+          example: 1
         title:
           type: string
           example: Design Dashboard
@@ -539,9 +553,6 @@ components:
             - COMPLETE
             - CANCELLED
           example: TO_DO
-        projectId:
-          type: integer
-          example: 1
         assignedTo:
           type: integer
           description: ID of the user that the task is assigned to
@@ -565,12 +576,94 @@ components:
           type: object
           description: User that is assigned the task
           properties:
-            id:
-              type: integer
-              example: 1
             name:
               type: string
               example: Alice Long
+            id:
+              type: integer
+              example: 1
+    CreateTaskResponse:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Design Dashboard
+        status:
+          type: string
+          enum:
+            - TO_DO
+            - IN_PROGRESS
+            - UNDER_REVIEW
+            - COMPLETE
+            - CANCELLED
+          example: TO_DO
+        dueDate:
+          type: string
+          format: date-time
+          example: '2025-12-12'
+        createdAt:
+          readOnly: true
+          type: string
+          format: date-time
+          example: '2025-08-05'
+        updatedAt:
+          readOnly: true
+          type: string
+          format: date-time
+          example: '2025-08-06'
+        projectId:
+          type: integer
+          example: 1
+        assignedTo:
+          type: integer
+          description: ID of the user that the task is assigned to
+          example: 1
+    UpdateTask:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: integer
+          example: 1
+        title:
+          readOnly: true
+          type: string
+          example: Design Dashboard
+        status:
+          type: string
+          enum:
+            - TO_DO
+            - IN_PROGRESS
+            - UNDER_REVIEW
+            - COMPLETE
+            - CANCELLED
+          example: TO_DO
+        dueDate:
+          type: string
+          format: date-time
+          example: '2025-12-12'
+        createdAt:
+          readOnly: true
+          type: string
+          format: date-time
+          example: '2025-08-05'
+        updatedAt:
+          readOnly: true
+          type: string
+          format: date-time
+          example: '2025-08-06'
+        projectId:
+          readOnly: true
+          type: integer
+          example: 1
+        assignedTo:
+          type: integer
+          description: ID of the user that the task is assigned to
+          example: 1
     Project:
       type: object
       properties:

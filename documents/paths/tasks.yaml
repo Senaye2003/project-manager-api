@@ -30,7 +30,7 @@ post:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/Task.yaml
+            $ref: ../components/schemas/CreateTaskResponse.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

@@ -10,13 +10,18 @@ patch:
       schema:
         type: integer
         example: 1
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/UpdateTask.yaml
   responses:
     '200':
       description: OK
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/Task.yaml
+            $ref: ../components/schemas/UpdateTask.yaml
     '400':
       $ref: ../components/responses/BadRequest.yaml
     '401':

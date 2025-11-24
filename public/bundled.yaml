@@ -1,0 +1,296 @@
+openapi: 3.1.0
+info:
+  title: Task API
+  version: 1.0.0
+servers:
+  - url: https://localhost:8001
+    description: Local Dev
+tags:
+  - name: Teams
+    description: Team-related endpoints
+  - name: Team Members
+    description: Team Members-related endpoints
+paths:
+  /teams:
+    get:
+      summary: List all /teams
+      tags:
+        - Teams
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Filter teams by name
+          schema:
+            type: string
+            example: Team 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+    post:
+      summary: Create a new team
+      tags:
+        - Teams
+      requestBody:
+        require: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '201':
+          description: Team created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/DuplicateErr'
+  /teams/{id}:
+    get:
+      summary: List a particular team schema
+      description: Get posts with {id}
+      tags:
+        - Teams
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Filter teams by id
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Team Schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Make changes to a team
+      description: Update posts with {id}
+      tags:
+        - Teams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '201':
+          description: Team updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/DuplicateErr'
+    delete:
+      summary: Delete a team
+      description: Delete posts with {id}
+      tags:
+        - Teams
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Filter teams by id
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '204':
+          description: Schema of Team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /teams/{teamId}/members:
+    post:
+      summary: Add a member to a team with {id}
+      tags:
+        - Team Members
+      requestBody:
+        require: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+      responses:
+        '201':
+          description: Member added created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/DuplicateErr'
+  /teams/{teamId}/members/{userId}:
+    delete:
+      summary: Delete members from a team
+      description: Delete members from team with {id}
+      tags:
+        - Team Members
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Delete member from teams with id
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '204':
+          description: Schema of Team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  schemas:
+    Team:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Team 2
+        projects:
+          readOnly: true
+          type: array
+          description: IDs of Projects associated with this team
+          items:
+            type: integer
+          example:
+            - 1
+            - 2
+        members:
+          readOnly: true
+          description: IDs of users that belong to this team
+          type: array
+          items:
+            type: integer
+          example:
+            - 5
+            - 6
+    AuthenticationError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid Token
+        details:
+          type: array
+          items:
+            type: string
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Validation Failed
+        details:
+          type: array
+          items:
+            type: string
+    AuthorizationError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Unauthorized Access
+        details:
+          type: array
+          items:
+            type: string
+    DuplicateError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Duplicate name exists
+        details:
+          type: array
+          items:
+            type: string
+  responses:
+    Unauthenticated:
+      description: Unauthenticated user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthenticationError'
+    BadRequest:
+      description: Invalid Input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+    Unauthorized:
+      description: Unauthorized Access
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthorizationError'
+    DuplicateErr:
+      description: Existing duplicate Information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DuplicateError'
+    NotFound:
+      description: ID Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DuplicateError'

@@ -1,0 +1,25 @@
+post:
+  summary: Add a member to a team with {id}
+  tags:
+    - Team Members
+  requestBody:
+    require: true
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/Team.yaml
+  responses:
+    '201':
+      description: Member added created successfully
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Team.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthenticated.yaml
+    '403':
+      $ref: ../components/responses/Unauthorized.yaml
+    '409':
+      $ref: ../components/responses/DuplicateErr.yaml

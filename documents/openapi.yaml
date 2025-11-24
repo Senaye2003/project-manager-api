@@ -4,5 +4,18 @@ info:
   version: '1.0.0'
 servers:
   - url: https://localhost:8001
-    description: Local Dev 
-paths: {}
+    description: Local Dev
+tags:
+  - name: Teams
+    description: Team-related endpoints
+  - name: Team Members
+    description: Team Members-related endpoints
+paths: 
+  /teams:
+    $ref: paths/teams.yaml
+  /teams/{id}:
+    $ref: paths/teamId.yaml
+  /teams/{teamId}/members:
+    $ref: paths/teamMember.yaml
+  /teams/{teamId}/members/{userId}:
+    $ref: paths/teamMemberId.yaml

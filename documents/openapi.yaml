@@ -3,7 +3,7 @@ info:
   title: Task API
   version: 1.0.0
 servers:
-  - url: https://localhost:8001
+  - url: http://localhost:3000
     description: Local Dev
 tags:
   - name: Tasks
@@ -12,20 +12,36 @@ tags:
     description: Team-related endpoints
   - name: Team Members
     description: Team Members-related endpoints
-paths: 
-  /teams:
+  - name: Projects
+    description: Project-related endpoints
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  #teams paths
+  /api/teams:
     $ref: paths/teams.yaml
-  /teams/{id}:
+  /api/teams/{id}:
     $ref: paths/teamId.yaml
-  /teams/{teamId}/members:
+  /api/teams/{teamId}/members:
     $ref: paths/teamMember.yaml
-  /teams/{teamId}/members/{userId}:
+  /api/teams/{teamId}/members/{userId}:
     $ref: paths/teamMemberId.yaml
   #tasks paths
-  /tasks:
+  /api/tasks:
     $ref: paths/tasks.yaml
-  /tasks/me:
+  /api/tasks/me:
     $ref: paths/tasksMe.yaml
-  /tasks/{id}:
+  /api/tasks/{id}:
     $ref: paths/tasksById.yaml
-    
+  #projects paths
+  /api/projects:
+    $ref: paths/projects.yaml
+  /api/projects/{id}:
+    $ref: paths/projects-id.yaml
+  

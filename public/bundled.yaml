@@ -3,8 +3,10 @@ info:
   title: Task API
   version: 1.0.0
 servers:
-  - url: https://localhost:8001
+  - url: http://localhost:3000
     description: Local Dev
+security:
+  - bearerAuth: []
 tags:
   - name: Tasks
     description: Task-related endpoints
@@ -12,8 +14,10 @@ tags:
     description: Team-related endpoints
   - name: Team Members
     description: Team Members-related endpoints
+  - name: Projects
+    description: Project-related endpoints
 paths:
-  /teams:
+  /api/teams:
     get:
       summary: List all /teams
       tags:
@@ -62,7 +66,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '409':
           $ref: '#/components/responses/DuplicateErr'
-  /teams/{id}:
+  /api/teams/{id}:
     get:
       summary: List a particular team schema
       description: Get posts with {id}
@@ -142,7 +146,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-  /teams/{teamId}/members:
+  /api/teams/{teamId}/members:
     post:
       summary: Add a member to a team with {id}
       tags:
@@ -168,7 +172,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '409':
           $ref: '#/components/responses/DuplicateErr'
-  /teams/{teamId}/members/{userId}:
+  /api/teams/{teamId}/members/{userId}:
     delete:
       summary: Delete members from a team
       description: Delete members from team with {id}
@@ -195,7 +199,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-  /tasks:
+  /api/tasks:
     get:
       summary: List all tasks
       tags:
@@ -235,7 +239,7 @@ paths:
           $ref: '#/components/responses/Unauthenticated'
         '403':
           $ref: '#/components/responses/Unauthorized'
-  /tasks/me:
+  /api/tasks/me:
     get:
       summary: List tasks assigned to logged in user
       tags:
@@ -250,7 +254,7 @@ paths:
                 $ref: '#/components/schemas/Task'
         '401':
           $ref: '#/components/responses/Unauthenticated'
-  /tasks/{id}:
+  /api/tasks/{id}:
     patch:
       summary: Update a task by id
       tags:
@@ -300,7 +304,143 @@ paths:
           $ref: '#/components/responses/Unauthenticated'
         '403':
           $ref: '#/components/responses/Unauthorized'
+  /api/projects:
+    get:
+      summary: List all projects
+      tags:
+        - Projects
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          required: false
+          description: Free-text search applied to project name/description
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            enum:
+              - id
+              - name
+              - startDate
+              - endDate
+          required: false
+          description: Field to sort by
+        - in: query
+          name: sortOrder
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          required: false
+          description: Sort direction
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Maximum number of items to return (1-100)
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          required: false
+          description: Pagination offset (0 or greater)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create a new project
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/projects/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: Project ID
+    get:
+      summary: Get a project by ID
+      tags:
+        - Projects
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      summary: Update a project
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      summary: Delete a project
+      tags:
+        - Projects
+      responses:
+        '204':
+          description: Deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Team:
       type: object
@@ -456,6 +596,46 @@ components:
           type: string
           format: date-time
           example: '2025-12-12'
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          example: Website Redesign
+        description:
+          type: string
+          example: Redesign company website to improve conversions
+        status:
+          type: string
+          enum:
+            - TO_DO
+            - IN_PROGRESS
+            - UNDER_REVIEW
+            - COMPLETE
+            - CANCELLED
+          example: TO_DO
+        startDate:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2025-10-01T00:00:00.000Z'
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2025-12-31T00:00:00.000Z'
+        teamId:
+          type: integer
+          nullable: true
+          example: 2
+        projectManagerId:
+          type: integer
+          nullable: true
+          example: 3
   responses:
     Unauthenticated:
       description: Unauthenticated user

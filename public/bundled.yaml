@@ -212,9 +212,32 @@ paths:
                   $ref: '#/components/schemas/Task'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+    post:
+      summary: Create a new task
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequestBody'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
   /tasks/me:
     get:
-      summary: Get tasks assigned to logged in user
+      summary: List tasks assigned to logged in user
       tags:
         - Tasks
       parameters: null
@@ -227,6 +250,9 @@ paths:
                 $ref: '#/components/schemas/Task'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+  /tasks/{id}:
+    patch: null
+    delete: null
 components:
   schemas:
     Team:
@@ -319,7 +345,7 @@ components:
           example: 1
         title:
           type: string
-          example: Buy groceries
+          example: Design Dashboard
         status:
           type: string
           enum:
@@ -357,6 +383,32 @@ components:
             name:
               type: string
               example: Alice Long
+    TaskRequestBody:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Design Dashboard
+        status:
+          type: string
+          enum:
+            - TO_DO
+            - IN_PROGRESS
+            - UNDER_REVIEW
+            - COMPLETE
+            - CANCELLED
+          example: TO_DO
+        projectId:
+          type: integer
+          example: 1
+        assignedTo:
+          type: integer
+          description: ID of the user that the task is assigned to
+          example: 1
+        dueDate:
+          type: string
+          format: date-time
+          example: '2025-12-12'
   responses:
     Unauthenticated:
       description: Unauthenticated user

@@ -9,7 +9,7 @@ properties:
     example: 1
   title:
     type: string
-    example: Buy groceries
+    example: Design Dashboard
   status:
     type: string
     enum:

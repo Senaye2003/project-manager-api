@@ -26,4 +26,6 @@ paths:
     $ref: paths/tasks.yaml
   /tasks/me:
     $ref: paths/tasksMe.yaml
-
+  /tasks/{id}:
+    $ref: paths/tasksById.yaml
+    

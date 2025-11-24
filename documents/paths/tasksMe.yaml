@@ -1,5 +1,5 @@
 get:
-  summary: Get tasks assigned to logged in user
+  summary: List tasks assigned to logged in user
   tags:
     - Tasks
   parameters:

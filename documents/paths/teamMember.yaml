@@ -2,12 +2,22 @@ post:
   summary: Add a member to a team with {id}
   tags:
     - Team Members
+  parameters:
+    - name: teamId
+      in: path
+      required: true
+      description: Team id
+      schema:
+        type: integer
+        example: 1
   requestBody:
     require: true
     content:
       application/json:
         schema:
           $ref: ../components/schemas/Team.yaml
+        example:
+          userId: 2
   responses:
     '201':
       description: Member added created successfully

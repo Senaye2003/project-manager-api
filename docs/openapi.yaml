@@ -1,13 +1,11 @@
-openapi: 3.1.0
+openapi: 3.1.3
 info:
   title: Project Manager API
   version: 1.0.0
   description: API documentation for users, projects, tasks, and teams.
-
 servers:
   - url: http://localhost:3000/api
     description: Local server
-
 tags:
   - name: Users
     description: User authentication & management
@@ -17,12 +15,22 @@ tags:
     description: Task CRUD operations
   - name: Teams
     description: Team creation, listing, and membership operations
-
 paths:
-  $ref: './paths/users.yaml'
-
+  /auth/signup:
+    $ref: paths/auth_signup.yaml
+  /auth/login:
+    $ref: paths/auth_login.yaml
+  /users/me:
+    $ref: paths/users_me.yaml
+  /users:
+    $ref: paths/users.yaml
+  /users/{id}/role:
+    $ref: paths/users_{id}_role.yaml
+  /users/{id}:
+    $ref: paths/users_{id}.yaml
 components:
-  schemas:
-    $ref: './components/schemas.yaml'
-  responses:
-    $ref: './components/responses.yaml'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

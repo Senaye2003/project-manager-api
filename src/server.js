@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 
-const specs = YAML.load('docs/openapi.yaml');
+const specs = YAML.load('./public/bundled.yaml');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(cors());

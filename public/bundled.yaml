@@ -1,0 +1,292 @@
+openapi: 3.1.3
+info:
+  title: Project Manager API
+  version: 1.0.0
+  description: API documentation for users, projects, tasks, and teams.
+servers:
+  - url: http://localhost:3000/api
+    description: Local server
+tags:
+  - name: Users
+    description: User authentication & management
+  - name: Projects
+    description: Project CRUD operations
+  - name: Tasks
+    description: Task CRUD operations
+  - name: Teams
+    description: Team creation, listing, and membership operations
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Users
+      summary: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignupInput'
+      responses:
+        '201':
+          description: User successfully created
+          content:
+            application/json:
+              example:
+                message: User created with id 10
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              example:
+                error: Email already registered
+  /auth/login:
+    post:
+      tags:
+        - Users
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginInput'
+      responses:
+        '200':
+          description: Login success
+          content:
+            application/json:
+              example:
+                accessToken: jwt-token-here
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              example:
+                error: Invalid credentials
+  /users/me:
+    get:
+      tags:
+        - Users
+      summary: Get current logged-in user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              example:
+                error: Missing or invalid token
+    patch:
+      tags:
+        - Users
+      summary: Update your own profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateInput'
+      responses:
+        '200':
+          description: Successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              example:
+                error: Missing or invalid token
+        '409':
+          description: Email already in use
+          content:
+            application/json:
+              example:
+                error: Email already registered
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users (MANAGER only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              example:
+                error: Missing or invalid token
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              example:
+                error: Forbidden:insufficient permission
+  /users/{id}/role:
+    patch:
+      tags:
+        - Users
+      summary: Update a user's role (MANAGER only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleUpdateInput'
+      responses:
+        '200':
+          description: Role updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              example:
+                error: Missing or invalid token
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              example:
+                error: Forbidden:insufficient permission
+        '404':
+          description: Not found
+          content:
+            application/json:
+              example:
+                error: User not found
+  /users/{id}:
+    delete:
+      tags:
+        - Users
+      summary: Delete a user (MANAGER only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              example:
+                error: Missing or invalid token
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              example:
+                error: Forbidden:insufficient permission
+        '404':
+          description: Not found
+          content:
+            application/json:
+              example:
+                error: User not found
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserSignupInput:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        role:
+          type: string
+          enum:
+            - DEVELOPER
+            - MANAGER
+    UserLoginInput:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+    UserUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    RoleUpdateInput:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum:
+            - DEVELOPER
+            - MANAGER

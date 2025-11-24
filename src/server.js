@@ -20,7 +20,7 @@ app.use(morgan('tiny'));
 app.use(express.json());
 
 // Mount routers
-app.use('/api', userRoutes);
+app.use('/', userRoutes);
 app.use('/api', projectRoutes);
 app.use('/api', taskRoutes);
 app.use('/api/teams', teamRoutes);

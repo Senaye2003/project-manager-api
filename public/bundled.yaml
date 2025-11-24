@@ -204,7 +204,7 @@ paths:
       summary: List all tasks
       tags:
         - Tasks
-      parameters: null
+      parameters: []
       responses:
         '200':
           description: OK
@@ -225,7 +225,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TaskRequestBody'
+              $ref: '#/components/schemas/Task'
       responses:
         '201':
           description: Task created successfully
@@ -244,7 +244,7 @@ paths:
       summary: List tasks assigned to logged in user
       tags:
         - Tasks
-      parameters: null
+      parameters: []
       responses:
         '200':
           description: OK
@@ -527,9 +527,6 @@ components:
           readOnly: true
           type: integer
           example: 1
-        projectId:
-          type: integer
-          example: 1
         title:
           type: string
           example: Design Dashboard
@@ -542,6 +539,9 @@ components:
             - COMPLETE
             - CANCELLED
           example: TO_DO
+        projectId:
+          type: integer
+          example: 1
         assignedTo:
           type: integer
           description: ID of the user that the task is assigned to
@@ -561,6 +561,7 @@ components:
           format: date-time
           example: '2025-08-06'
         assignee:
+          readOnly: true
           type: object
           description: User that is assigned the task
           properties:
@@ -570,32 +571,6 @@ components:
             name:
               type: string
               example: Alice Long
-    TaskRequestBody:
-      type: object
-      properties:
-        title:
-          type: string
-          example: Design Dashboard
-        status:
-          type: string
-          enum:
-            - TO_DO
-            - IN_PROGRESS
-            - UNDER_REVIEW
-            - COMPLETE
-            - CANCELLED
-          example: TO_DO
-        projectId:
-          type: integer
-          example: 1
-        assignedTo:
-          type: integer
-          description: ID of the user that the task is assigned to
-          example: 1
-        dueDate:
-          type: string
-          format: date-time
-          example: '2025-12-12'
     Project:
       type: object
       properties:

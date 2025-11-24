@@ -4,9 +4,6 @@ properties:
     readOnly: true
     type: integer
     example: 1
-  projectId:
-    type: integer
-    example: 1
   title:
     type: string
     example: Design Dashboard
@@ -19,6 +16,9 @@ properties:
      - COMPLETE
      - CANCELLED
     example: TO_DO
+  projectId:
+    type: integer
+    example: 1
   assignedTo:
     type: integer
     description: ID of the user that the task is assigned to
@@ -38,6 +38,7 @@ properties:
     format: date-time
     example: 2025-08-06
   assignee:
+    readOnly: true
     type: object
     description: User that is assigned the task
     properties:

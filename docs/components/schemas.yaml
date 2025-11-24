@@ -1,0 +1,61 @@
+UserSignupInput:
+  type: object
+  required: [name, email, password]
+  properties:
+    name:
+      type: string
+    email:
+      type: string
+      format: email
+    password:
+      type: string
+      format: password
+    role:
+      type: string
+      enum: [DEVELOPER, MANAGER]
+
+UserLoginInput:
+  type: object
+  required: [email, password]
+  properties:
+    email:
+      type: string
+      format: email
+    password:
+      type: string
+      format: password
+
+UserUpdateInput:
+  type: object
+  properties:
+    name:
+      type: string
+    email:
+      type: string
+      format: email
+    password:
+      type: string
+      format: password
+
+RoleUpdateInput:
+  type: object
+  required: [role]
+  properties:
+    role:
+      type: string
+      enum: [DEVELOPER, MANAGER]
+
+User:
+  type: object
+  properties:
+    id:
+      type: integer
+    name:
+      type: string
+    email:
+      type: string
+    role:
+      type: string
+    updatedAt:
+      type: string
+      format: date-time

@@ -5,9 +5,15 @@ import userRoutes from './routes/userRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+
+const specs = YAML.load('docs/openapi.yaml');
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(cors());
 app.use(morgan('tiny'));

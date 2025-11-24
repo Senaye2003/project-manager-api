@@ -1,0 +1,28 @@
+openapi: 3.1.0
+info:
+  title: Project Manager API
+  version: 1.0.0
+  description: API documentation for users, projects, tasks, and teams.
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local server
+
+tags:
+  - name: Users
+    description: User authentication & management
+  - name: Projects
+    description: Project CRUD operations
+  - name: Tasks
+    description: Task CRUD operations
+  - name: Teams
+    description: Team creation, listing, and membership operations
+
+paths:
+  $ref: './paths/users.yaml'
+
+components:
+  schemas:
+    $ref: './components/schemas.yaml'
+  responses:
+    $ref: './components/responses.yaml'

@@ -1,0 +1,151 @@
+'/auth/signup':
+  post:
+    tags: [Users]
+    summary: Create a new user account
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserSignupInput'
+    responses:
+      '201':
+        description: User successfully created
+        content:
+          application/json:
+            example:
+              message: User created with id 10
+      '409':
+        $ref: '#/components/responses/EmailConflict'
+
+'/auth/login':
+  post:
+    tags: [Users]
+    summary: Log in a user
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserLoginInput'
+    responses:
+      '200':
+        description: Login success
+        content:
+          application/json:
+            example:
+              accessToken: jwt-token-here
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+
+'/users/me':
+  get:
+    tags: [Users]
+    summary: Get current logged-in user
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: The user profile
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+  patch:
+    tags: [Users]
+    summary: Update your own profile
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserUpdateInput'
+    responses:
+      '200':
+        description: Successfully updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      '409':
+        $ref: '#/components/responses/EmailConflict'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+
+'/users':
+  get:
+    tags: [Users]
+    summary: Get all users (MANAGER only)
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: List of users
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+
+'/users/{id}/role':
+  patch:
+    tags: [Users]
+    summary: Update a user’s role (MANAGER only)
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RoleUpdateInput'
+    responses:
+      '200':
+        description: Role updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+'/users/{id}':
+  delete:
+    tags: [Users]
+    summary: Delete a user (MANAGER only)
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+    responses:
+      '204':
+        description: Deleted successfully
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '404':
+        $ref: '#/components/responses/NotFound'

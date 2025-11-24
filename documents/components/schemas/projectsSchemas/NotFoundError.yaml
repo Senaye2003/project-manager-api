@@ -1,0 +1,5 @@
+type: object
+properties:
+  error:
+    type: string
+    example: Cannot find project with id 1

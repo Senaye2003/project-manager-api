@@ -1,0 +1,9 @@
+description: Unauthorized
+content:
+  application/json:
+    schema:
+      $ref: ../../schemas/common/Error.yaml
+    examples:
+      unauthorized:
+        value:
+          error: "Missing or invalid token"

@@ -1,5 +1,0 @@
-type: object
-properties:
-  error:
-    type: string
-    example: Cannot find task with id 1

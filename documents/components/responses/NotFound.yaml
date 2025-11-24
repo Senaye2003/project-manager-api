@@ -2,4 +2,4 @@ description: ID Not found
 content:
   application/json:
     schema:
-      $ref: ../schemas/DuplicateError.yaml
+      $ref: ../schemas/NotFoundError.yaml

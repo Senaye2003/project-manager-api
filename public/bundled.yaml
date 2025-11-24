@@ -210,6 +210,23 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+  /tasks/me:
+    get:
+      summary: Get tasks assigned to logged in user
+      tags:
+        - Tasks
+      parameters: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
 components:
   schemas:
     Team:
@@ -276,6 +293,16 @@ components:
         error:
           type: string
           example: Duplicate name exists
+        details:
+          type: array
+          items:
+            type: string
+    NotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: ID not found
         details:
           type: array
           items:
@@ -360,4 +387,4 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/DuplicateError'
+            $ref: '#/components/schemas/NotFoundError'

@@ -11,5 +11,7 @@ get:
           schema:
             type: array
             items:
-              $ref: ../components/schemas/tasksSchemas/Task.yaml
+              $ref: ../components/schemas/Task.yaml
+    '401':
+      $ref: ../components/responses/Unauthenticated.yaml
 

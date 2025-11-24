@@ -1,5 +1,0 @@
-description: Invalid input
-content:
-  application/json:
-    schema:
-      $ref: ../schemas/tasksSchemas/ValidationError.yaml

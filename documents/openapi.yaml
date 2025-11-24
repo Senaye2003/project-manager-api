@@ -21,5 +21,9 @@ paths:
     $ref: paths/teamMember.yaml
   /teams/{teamId}/members/{userId}:
     $ref: paths/teamMemberId.yaml
+  #tasks paths
   /tasks:
     $ref: paths/tasks.yaml
+  /tasks/me:
+    $ref: paths/tasksMe.yaml
+

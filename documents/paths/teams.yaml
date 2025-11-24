@@ -1,0 +1,48 @@
+get:
+  summary: List all /teams
+  tags:
+    - Teams
+  parameters:
+    - name: name
+      in: query
+      required: false
+      description: Filter teams by name
+      schema:
+        type: string
+        example: Team 1
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/Team.yaml
+    '401':
+      $ref: ../components/responses/Unauthenticated.yaml
+post:
+  summary: Create a new team
+  tags:
+    - Teams
+  requestBody:
+    require: true
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/Team.yaml
+  responses:
+    '201':
+      description: Team created successfully
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/Team.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthenticated.yaml
+    '403':
+      $ref: ../components/responses/Unauthorized.yaml
+    '409':
+      $ref: ../components/responses/DuplicateErr.yaml

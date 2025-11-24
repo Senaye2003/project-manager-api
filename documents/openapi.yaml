@@ -8,6 +8,18 @@ servers:
 tags:
   - name: Tasks
     description: Task-related endpoints
-paths:
+  - name: Teams
+    description: Team-related endpoints
+  - name: Team Members
+    description: Team Members-related endpoints
+paths: 
+  /teams:
+    $ref: paths/teams.yaml
+  /teams/{id}:
+    $ref: paths/teamId.yaml
+  /teams/{teamId}/members:
+    $ref: paths/teamMember.yaml
+  /teams/{teamId}/members/{userId}:
+    $ref: paths/teamMemberId.yaml
   /tasks:
     $ref: paths/tasks.yaml

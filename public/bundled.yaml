@@ -251,8 +251,55 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthenticated'
   /tasks/{id}:
-    patch: null
-    delete: null
+    patch:
+      summary: Update a task by id
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Task id
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete a task by id
+      tags:
+        - Tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Task id
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '204':
+          description: No content
+          content:
+            application/json:
+              schema: null
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
     Team:

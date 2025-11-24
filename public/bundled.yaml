@@ -1,0 +1,78 @@
+openapi: 3.1.0
+info:
+  title: Task API
+  version: 1.0.0
+servers:
+  - url: https://localhost:8001
+    description: Local Dev
+tags:
+  - name: Tasks
+    description: Task-related endpoints
+paths:
+  /tasks:
+    get:
+      summary: List all tasks
+      tags:
+        - Tasks
+      parameters: null
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: integer
+          example: 1
+        projectId:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Buy groceries
+        status:
+          type: string
+          enum:
+            - TO_DO
+            - IN_PROGRESS
+            - UNDER_REVIEW
+            - COMPLETE
+            - CANCELLED
+          example: TO_DO
+        assignedTo:
+          type: integer
+          description: ID of the user that the task is assigned to
+          example: 1
+        dueDate:
+          type: string
+          format: date-time
+          example: '2025-12-12'
+        createdAt:
+          readOnly: true
+          type: string
+          format: date-time
+          example: '2025-08-05'
+        updatedAt:
+          readOnly: true
+          type: string
+          format: date-time
+          example: '2025-08-06'
+        assignee:
+          type: object
+          description: User that is assigned the task
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: Alice Long

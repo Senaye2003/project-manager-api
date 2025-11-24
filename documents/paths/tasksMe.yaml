@@ -2,7 +2,7 @@ get:
   summary: List tasks assigned to logged in user
   tags:
     - Tasks
-  parameters:
+  parameters: []
   responses:
     '200':
       description: OK

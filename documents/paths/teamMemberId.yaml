@@ -4,13 +4,20 @@ delete:
   tags:
     - Team Members
   parameters:
-    - name: id
+    - name: teamId
       in: path
       required: true
       description: Delete member from teams with id
       schema:
         type: integer
         example: 1
+    - name: userId
+      in: path
+      required: true
+      description: ID of the user to remove from the team
+      schema:
+        type: integer
+        example: 2
   responses:
     '204':
       description: Schema of Team

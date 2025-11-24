@@ -2,7 +2,7 @@ get:
   summary: List all tasks
   tags:
     - Tasks
-  parameters:
+  parameters: []
   responses:
     '200':
       description: OK

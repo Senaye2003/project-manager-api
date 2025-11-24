@@ -1,15 +1,7 @@
 get:
-  summary: List all /teams
+  summary: List all teams
   tags:
     - Teams
-  parameters:
-    - name: name
-      in: query
-      required: false
-      description: Filter teams by name
-      schema:
-        type: string
-        example: Team 1
   responses:
     '200':
       description: OK

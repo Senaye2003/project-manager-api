@@ -5,6 +5,8 @@ info:
 servers:
   - url: http://localhost:3000
     description: Local Dev
+  - url: https://project-manager-api-lyrz.onrender.com
+    description: Production server on render
 security:
   - bearerAuth: []
 tags:

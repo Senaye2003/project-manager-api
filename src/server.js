@@ -11,19 +11,24 @@ import YAML from 'yamljs';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-
-const specs = YAML.load('./public/bundled.yaml');
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
-
 app.use(cors());
 app.use(morgan('tiny'));
 app.use(express.json());
+
+const specs = YAML.load('./public/bundled.yaml')
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 
 // Mount routers
 app.use('/', userRoutes);
 app.use('/api', projectRoutes);
 app.use('/api', taskRoutes);
 app.use('/api/teams', teamRoutes);
+
+
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');

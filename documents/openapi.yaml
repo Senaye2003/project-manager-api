@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Project Manager API
+  title: Task API
   version: 1.0.0
 servers:
   - url: http://localhost:3000
@@ -23,6 +23,20 @@ components:
       scheme: bearer
       bearerFormat: JWT
 paths:
+  #auth paths
+  /api/auth/login:
+    $ref: paths/auth_login.yaml
+  /api/auth/signup:
+    $ref: paths/auth_signup.yaml
+  #users paths
+  /api/users:
+    $ref: paths/users.yaml
+  /api/users/me:
+    $ref: paths/users_me.yaml
+  /api/users/{id}:
+    $ref: paths/users_{id}.yaml
+  /api/users/{id}/role:
+    $ref: paths/users_{id}_role.yaml
   #teams paths
   /api/teams:
     $ref: paths/teams.yaml
@@ -44,17 +58,4 @@ paths:
     $ref: paths/projects.yaml
   /api/projects/{id}:
     $ref: paths/projects-id.yaml
-  #auth and users paths
-  /auth/signup:
-    $ref: paths/auth_signup.yaml
-  /auth/login:
-    $ref: paths/auth_login.yaml
-  /users/me:
-    $ref: paths/users_me.yaml
-  /users:
-    $ref: paths/users.yaml
-  /users/{id}/role:
-    $ref: paths/users_{id}_role.yaml
-  /users/{id}:
-    $ref: paths/users_{id}.yaml
   
